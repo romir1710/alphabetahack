@@ -72,7 +72,7 @@ export default function StudentCard({ student }: StudentCardProps) {
             href={student.cv.dataUrl}
             download={student.cv.name}
             aria-label={`Download ${student.name}'s CV`}
-            className="flex items-center gap-2 self-start rounded-lg border border-amber-500/20 px-3 py-2 text-sm text-amber-300 transition-colors hover:bg-amber-500/10"
+            className="flex items-center gap-2 self-start rounded-lg border border-amber-500/20 px-3 py-2 text-sm text-amber-300 transition-all duration-200 hover:border-amber-400/60 hover:bg-amber-500/20 hover:text-amber-100 active:scale-95 active:bg-amber-500/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none"
           >
             <FileText className="h-4 w-4" />
             Download CV
@@ -87,7 +87,7 @@ export default function StudentCard({ student }: StudentCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${student.name}'s GitHub`}
-              className="rounded-lg p-2 text-neutral-500 transition-colors duration-200 hover:bg-white/5 hover:text-amber-400"
+              className="rounded-lg p-2 text-neutral-400 transition-all duration-200 hover:bg-amber-500/20 hover:text-amber-300 hover:scale-110 active:scale-95 active:bg-amber-500/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none"
             >
               <Github className="h-5 w-5" />
             </a>
@@ -99,7 +99,7 @@ export default function StudentCard({ student }: StudentCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${student.name}'s LinkedIn`}
-              className="rounded-lg p-2 text-neutral-500 transition-colors duration-200 hover:bg-white/5 hover:text-amber-400"
+              className="rounded-lg p-2 text-neutral-400 transition-all duration-200 hover:bg-amber-500/20 hover:text-amber-300 hover:scale-110 active:scale-95 active:bg-amber-500/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none"
             >
               <Linkedin className="h-5 w-5" />
             </a>
