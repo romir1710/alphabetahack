@@ -1,6 +1,7 @@
 export interface Student {
   id: string;
   name: string;
+  photo: string;
   skills: string[];
   github: string;
   linkedin: string;
@@ -11,6 +12,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-1",
     name: "Romir Tandon",
+    photo: "/avatars/romir_tandon.png",
     skills: ["Python", "Next.js", "FastAPI", "Apache Kafka", "LangGraph", "PostgreSQL"],
     github: "https://github.com/romirtandon",
     linkedin: "https://linkedin.com/in/romirtandon",
@@ -19,6 +21,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-2",
     name: "Elena Rostova",
+    photo: "/avatars/elena_rostova.jpg",
     skills: ["Figma", "UI/UX Design", "WCAG 2.2", "Framer Motion", "Design Systems", "Prototyping", "User Research", "Tailwind CSS"],
     github: "https://github.com/elenarostova",
     linkedin: "https://linkedin.com/in/elena-rostova-design",
@@ -27,6 +30,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-3",
     name: "Alexander Hayes",
+    photo: "/avatars/alex_hayes.jpg",
     skills: ["Financial Modeling", "Market Research", "Venture Capital", "Pitch Deck Design", "Go-To-Market Strategy", "Startup Valuation", "Unit Economics"],
     github: "https://github.com/alexhayes-biz",
     linkedin: "https://linkedin.com/in/alexander-hayes-vc",
@@ -35,6 +39,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-4",
     name: "Kai Takahashi",
+    photo: "/avatars/kai_takahashi.jpg",
     skills: ["C++", "ROS2", "Embedded Systems", "FreeRTOS", "STM32", "PCB Design", "KiCad", "Microcontrollers", "Computer Vision"],
     github: "https://github.com/kaitakahashi-robotics",
     linkedin: "https://linkedin.com/in/kai-takahashi-robotics",
@@ -43,6 +48,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-5",
     name: "Sofia Gomez",
+    photo: "/avatars/sofia_gomez.jpg",
     skills: ["Growth Hacking", "Community Management", "Event Production", "Viral Marketing", "Content Strategy", "SEO", "User Acquisition", "Brand Partnerships"],
     github: "https://github.com/sofiagomez-growth",
     linkedin: "https://linkedin.com/in/sofia-gomez-growth",
@@ -51,6 +57,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-6",
     name: "Jordan Chen",
+    photo: "/avatars/jordan_chen.jpg",
     skills: ["Swift", "SwiftUI", "Kotlin", "Jetpack Compose", "iOS Development", "Android Development", "REST APIs", "GraphQL", "CoreData"],
     github: "https://github.com/jordanchen-mobile",
     linkedin: "https://linkedin.com/in/jordan-chen-mobile",
@@ -59,6 +66,7 @@ export const initialStudents: Student[] = [
   {
     id: "student-7",
     name: "Manitej Narayanadasu",
+    photo: "/avatars/manitej_narayanadasu.png",
     skills: ["Web Development", "UI/UX Design", "Figma", "React", "Next.js", "Tailwind CSS", "Node.js", "REST APIs", "PostgreSQL", "Vercel", "shadcn/ui"],
     github: "https://github.com/ManitejNarayanadasu",
     linkedin: "https://linkedin.com/in/manitejnarayanadasu",

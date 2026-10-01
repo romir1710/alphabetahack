@@ -7,6 +7,7 @@ import StudentCard from "@/components/StudentCard";
 export interface Student {
   id: string;
   name: string;
+  photo: string;
   skills: string[];
   github: string;
   linkedin: string;
