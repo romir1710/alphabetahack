@@ -3,16 +3,8 @@
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
 import { SendHorizonal, Camera } from "lucide-react";
 
-export interface Student {
-  id: string;
-  name: string;
-  skills: string[];
-  github: string;
-  linkedin: string;
-  bio: string;
-  avatar?: string;
-  cv?: { name: string; dataUrl: string };
-}
+import type { Student } from "@/types/student";
+export type { Student } from "@/types/student";
 
 interface StudentFormProps {
   onSubmit: (student: Student) => void;

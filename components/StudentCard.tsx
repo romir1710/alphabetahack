@@ -1,23 +1,17 @@
 "use client";
 
-import { Github, Linkedin, FileText } from "lucide-react";
+import { Code2 as Github, Link as Linkedin, FileText } from "lucide-react";
 
-export interface Student {
-  id: string;
-  name: string;
-  skills: string[];
-  github: string;
-  linkedin: string;
-  bio: string;
-  avatar?: string;
-  cv?: { name: string; dataUrl: string };
-}
+import type { Student } from "@/types/student";
+export type { Student } from "@/types/student";
 
 interface StudentCardProps {
   student: Student;
 }
 
 export default function StudentCard({ student }: StudentCardProps) {
+  const avatar = student.avatar || student.photo;
+
   return (
     <div className="group relative w-full max-w-sm rounded-2xl border border-white/10 bg-black/60 p-6 backdrop-blur-xl transition-all duration-300 hover:border-amber-500/30 hover:shadow-[0_0_30px_-5px_rgba(217,169,56,0.15)]">
       {/* Subtle gradient glow behind the card on hover */}
@@ -26,9 +20,9 @@ export default function StudentCard({ student }: StudentCardProps) {
       <div className="relative z-10 flex flex-col gap-4">
         {/* Avatar + Name */}
         <div className="flex items-center gap-4">
-          {student.avatar ? (
+          {avatar ? (
             <img
-              src={student.avatar}
+              src={avatar}
               alt={student.name}
               className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-amber-500/40"
             />

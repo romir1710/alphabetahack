@@ -1,12 +1,5 @@
-export interface Student {
-  id: string;
-  name: string;
-  photo: string;
-  skills: string[];
-  github: string;
-  linkedin: string;
-  bio: string;
-}
+import type { Student } from "@/types/student";
+export type { Student } from "@/types/student";
 
 export const initialStudents: Student[] = [
   {

@@ -4,17 +4,8 @@ import { useState } from "react";
 import { Loader2, Search, Sparkles } from "lucide-react";
 import StudentCard from "@/components/StudentCard";
 
-export interface Student {
-  id: string;
-  name: string;
-  photo: string;
-  skills: string[];
-  github: string;
-  linkedin: string;
-  bio: string;
-  avatar?: string;
-  cv?: { name: string; dataUrl: string };
-}
+import type { Student } from "@/types/student";
+export type { Student } from "@/types/student";
 
 interface Match {
   id: string;
@@ -37,7 +28,10 @@ export default function FounderSearch({ students }: { students: Student[] }) {
       const res = await fetch("/api/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, students }),
+        body: JSON.stringify({
+          query,
+          students: students.map(({ id, name, skills, bio }) => ({ id, name, skills, bio })),
+        }),
       });
       const data = await res.json();
       if (!res.ok) {

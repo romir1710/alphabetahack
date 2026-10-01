@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
 
-export interface Student {
-  id: string;
-  name: string;
-  skills: string[];
-  github: string;
-  linkedin: string;
-  bio: string;
-  avatar?: string;
-  cv?: { name: string; dataUrl: string };
-}
+import type { Student } from "@/types/student";
+export type { Student } from "@/types/student";
 
 interface Match {
   id: string;
