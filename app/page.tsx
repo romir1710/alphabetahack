@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import FounderSearch from "@/components/FounderSearch";
-import type { MatchResult } from "@/components/FounderSearch";
+import FounderSearch, { type MatchResult } from "@/components/FounderSearch";
 import StudentForm from "@/components/StudentForm";
 import { initialStudents } from "@/data/MockStudent";
 import type { Student } from "@/types/student";

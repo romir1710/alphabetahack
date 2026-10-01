@@ -1,33 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Loader2, Search, Sparkles, FlaskConical } from "lucide-react";
+import StudentCard from "@/components/StudentCard";
 
 import type { Student } from "@/types/student";
 export type { Student } from "@/types/student";
 
-export interface MatchResult {
-  student: Student;
+interface Match {
+  id: string;
   reason: string;
 }
 
-/** Split a free-text query into individual lowercase keywords. */
-function parseKeywords(query: string): string[] {
-  return query
-    .toLowerCase()
-    .split(/[\s,]+/)
-    .map((k) => k.trim())
-    .filter(Boolean);
-}
-
-/**
- * Case-insensitive keyword match against a student's skills array.
- * Returns the subset of query keywords that appear in the student's skills.
- */
-function matchingSkills(student: Student, keywords: string[]): string[] {
-  return keywords.filter((kw) =>
-    student.skills.some((skill) => skill.toLowerCase().includes(kw))
-  );
+export interface MatchResult {
+  student: Student;
+  reason: string;
 }
 
 export default function FounderSearch({
@@ -38,35 +25,71 @@ export default function FounderSearch({
   onMatchFound?: (results: MatchResult[]) => void;
 }) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<MatchResult[]>([]);
-  const [searched, setSearched] = useState(false);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function findMatches() {
-    const q = query.trim();
-    if (!q) return;
+  function enrichAndNotify(rawMatches: Match[]) {
+    const enriched = rawMatches
+      .map((m) => ({
+        reason: m.reason,
+        student: students.find((s) => s.id === m.id),
+      }))
+      .filter((r): r is MatchResult => r.student !== undefined);
 
-    const keywords = parseKeywords(q);
-
-    const matched: MatchResult[] = students
-      .map((student) => {
-        const hits = matchingSkills(student, keywords);
-        return { student, hits };
-      })
-      .filter(({ hits }) => hits.length > 0)
-      // Sort: more matching keywords = higher rank
-      .sort((a, b) => b.hits.length - a.hits.length)
-      .map(({ student, hits }) => ({
-        student,
-        reason: `Matches: ${hits.join(", ")}`,
-      }));
-
-    setResults(matched);
-    setSearched(true);
-
-    if (onMatchFound && matched.length > 0) {
-      onMatchFound(matched);
+    if (onMatchFound && enriched.length > 0) {
+      onMatchFound(enriched);
     }
   }
+
+  async function findMatches() {
+    if (!query.trim()) return;
+    setLoading(true);
+    setError("");
+    setMatches([]);
+
+    try {
+      const res = await fetch("/api/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query,
+          students: students.map(({ id, name, skills, bio }) => ({ id, name, skills, bio })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong");
+        return;
+      }
+      setMatches(data);
+      enrichAndNotify(data);
+    } catch {
+      setError("Could not reach the server");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /** Demo mode: skip AI, show first 3 students with canned reasons */
+  function loadDemo() {
+    const demoReasons = [
+      "Exceptional technical depth \u2014 exactly the kind of builder who can ship fast and scale smart.",
+      "Rare blend of design intuition and engineering rigour; will elevate every surface of the product.",
+      "Domain knowledge + execution track record makes this candidate a force-multiplier for any founding team.",
+    ];
+    const demoMatches = students.slice(0, 3).map((s, i) => ({
+      id: s.id,
+      reason: demoReasons[i] ?? "Strong complementary skill set for your venture.",
+    }));
+    setMatches(demoMatches);
+    setError("");
+    enrichAndNotify(demoMatches);
+  }
+
+  const results = matches
+    .map((m) => ({ ...m, student: students.find((s) => s.id === m.id) }))
+    .filter((m) => m.student);
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-4">
@@ -80,50 +103,51 @@ export default function FounderSearch({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && findMatches()}
-            placeholder="e.g. Python, React, Figma"
+            placeholder="e.g. A frontend developer who knows React"
             className="flex-1 rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 transition-colors text-sm"
           />
           <button
             onClick={findMatches}
-            disabled={!query.trim()}
+            disabled={loading || !query.trim()}
             className="flex items-center gap-2 rounded-xl bg-neutral-900 px-6 py-3 font-semibold text-white text-sm transition hover:bg-neutral-700 disabled:opacity-40"
           >
-            <Search className="h-4 w-4" />
-            Search
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            Match
           </button>
         </div>
 
-        {/* No results message */}
-        {searched && results.length === 0 && (
-          <p className="text-sm text-neutral-400">
-            No profiles match <span className="font-medium text-neutral-700">&ldquo;{query}&rdquo;</span>. Try a different skill.
-          </p>
-        )}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        {/* Demo mode button */}
+        <button
+          onClick={loadDemo}
+          className="flex items-center gap-2 text-[10px] tracking-widest uppercase text-neutral-400 hover:text-neutral-700 transition-colors"
+        >
+          <FlaskConical className="h-3 w-3" />
+          Preview matches (demo mode)
+        </button>
       </div>
 
-      {/* Inline results — shown when no onMatchFound handler */}
-      {!onMatchFound && results.length > 0 && (
-        <div className="space-y-3">
-          {results.map(({ student, reason }) => (
-            <div
-              key={student.id}
-              className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 shadow-sm"
-            >
-              {student.photo ? (
-                <img
-                  src={student.photo}
-                  alt={student.name}
-                  className="h-9 w-9 shrink-0 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-xs font-bold text-neutral-600">
-                  {student.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
-                </div>
-              )}
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-neutral-900 truncate">{student.name}</p>
-                <p className="text-xs text-neutral-500 truncate">{reason}</p>
+      {/* Loading */}
+      {loading && (
+        <div className="flex items-center justify-center gap-3 text-neutral-500">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm">Finding your best matches...</span>
+        </div>
+      )}
+
+      {/* Inline results — shown when no onMatchFound handler (standalone usage) */}
+      {!onMatchFound && (
+        <div className="space-y-6">
+          {results.map(({ id, reason, student }, i) => (
+            <div key={id} className="space-y-3">
+              <div className="flex gap-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4 text-amber-200">
+                <Sparkles className="h-5 w-5 shrink-0 mt-0.5" />
+                <p>
+                  <span className="font-semibold">#{i + 1} match:</span> {reason}
+                </p>
               </div>
+              <StudentCard student={student!} />
             </div>
           ))}
         </div>
