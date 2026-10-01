@@ -1,61 +1,52 @@
 "use client";
 
 import { useState } from "react";
-import FounderSearch from "@/components/FounderSearch";
+import FounderSearch, { type MatchResult } from "@/components/FounderSearch";
+import StudentForm from "@/components/StudentForm";
 import { initialStudents } from "@/data/MockStudent";
+import type { Student } from "@/types/student";
 
 /* ─────────────────────────────────────────────
-   Types
+   Helpers
 ───────────────────────────────────────────── */
-export interface Student {
-  id: string;
-  name: string;
-  skills: string[];
-  github: string;
-  linkedin: string;
-  bio: string;
-  image?: string;
-  matchReason?: string;
-}
-
-/* ─────────────────────────────────────────────
-   Fallback portraits — used when student.image
-   is not yet set (teammate will add real images)
-───────────────────────────────────────────── */
-const FALLBACK_PORTRAITS = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1280&q=80",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1280&q=80",
-  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1280&q=80",
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1280&q=80",
-  "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=1280&q=80",
-  "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=1280&q=80",
-  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1280&q=80",
-];
-
 function getPortrait(student: Student, index: number): string {
-  return student.image || FALLBACK_PORTRAITS[index % FALLBACK_PORTRAITS.length];
-}
-
-/* ─────────────────────────────────────────────
-   Placeholder — teammate will replace
-───────────────────────────────────────────── */
-function StudentForm() {
-  return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="border border-white/10 rounded-sm p-6 text-center text-white/30 text-sm tracking-widest uppercase">
-        Student Profile Form — coming soon
-      </div>
-    </div>
-  );
+  // photo is either a /avatars/... path (mock data) or a base-64 data URL (form upload)
+  if (student.photo) return student.photo;
+  // Hard fallback — only reached for students added without a photo
+  const FALLBACK_PORTRAITS = [
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1280&q=80",
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1280&q=80",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1280&q=80",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1280&q=80",
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=1280&q=80",
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=1280&q=80",
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1280&q=80",
+  ];
+  return FALLBACK_PORTRAITS[index % FALLBACK_PORTRAITS.length];
 }
 
 /* ─────────────────────────────────────────────
    Page
 ───────────────────────────────────────────── */
 export default function Page() {
+  const [students, setStudents] = useState<Student[]>(initialStudents);
   const [matchedStudents, setMatchedStudents] = useState<Student[]>([]);
   const [view, setView] = useState<"home" | "results">("home");
   const [activeIndex, setActiveIndex] = useState(0);
+
+  function handleNewStudent(student: Student) {
+    setStudents((prev) => [student, ...prev]);
+  }
+
+  function handleMatchFound(results: MatchResult[]) {
+    const enriched: Student[] = results.map((r) => ({
+      ...r.student,
+      matchReason: r.reason,
+    }));
+    setMatchedStudents(enriched);
+    setView("results");
+    setActiveIndex(0);
+  }
 
   /* ── HOME VIEW ── */
   if (view === "home") {
@@ -95,18 +86,10 @@ export default function Page() {
           style={{ animation: "slideUp 1s ease-out both" }}
         >
           <FounderSearch
-            students={initialStudents}
-            onMatchFound={(results) => {
-              const enriched: Student[] = results.map((r) => ({
-                ...r.student,
-                matchReason: r.reason,
-              }));
-              setMatchedStudents(enriched);
-              setView("results");
-              setActiveIndex(0);
-            }}
+            students={students}
+            onMatchFound={handleMatchFound}
           />
-          <StudentForm />
+          <StudentForm onSubmit={handleNewStudent} />
         </div>
       </main>
     );
@@ -138,12 +121,12 @@ export default function Page() {
 
         {/* ── Top zone — headline + description ── */}
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between md:gap-16">
-          {/* Left — H1 (static, never changes) */}
+          {/* Left — H1 (static) */}
           <h1 className="max-w-xl text-3xl font-normal leading-[1.1] tracking-tight sm:text-5xl lg:text-7xl">
             Campus Connect is the talent you build with each&nbsp;day
           </h1>
 
-          {/* Right — description (changes with active slide) */}
+          {/* Right — match reason / bio (animated on slide change) */}
           <p
             key={active.id}
             className="max-w-xs text-sm font-medium leading-relaxed text-white/80 animate-[fadeIn_0.5s_ease] sm:text-base md:pt-2"
@@ -194,27 +177,31 @@ export default function Page() {
 
             {/* Skills (hidden mobile, visible sm+) */}
             <span key={`skills-${active.id}`} className="hidden text-white/70 sm:block">
-              {active.skills.join(" \u00b7 ")}
+              {active.skills.join(" · ")}
             </span>
 
             {/* GitHub + LinkedIn (hidden until md) */}
             <span className="hidden text-white/70 md:flex md:gap-3">
-              <a
-                href={active.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4 transition-colors hover:text-white/70"
-              >
-                GitHub
-              </a>
-              <a
-                href={active.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4 transition-colors hover:text-white/70"
-              >
-                LinkedIn
-              </a>
+              {active.github && (
+                <a
+                  href={active.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4 transition-colors hover:text-white/70"
+                >
+                  GitHub
+                </a>
+              )}
+              {active.linkedin && (
+                <a
+                  href={active.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4 transition-colors hover:text-white/70"
+                >
+                  LinkedIn
+                </a>
+              )}
             </span>
 
             {/* Back to search */}
@@ -222,7 +209,7 @@ export default function Page() {
               onClick={() => setView("home")}
               className="underline underline-offset-4 transition-colors hover:text-white/70"
             >
-              &#8592; Back to Search
+              ← Back to Search
             </button>
           </div>
         </div>

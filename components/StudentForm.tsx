@@ -16,7 +16,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
   const [skillsRaw, setSkillsRaw] = useState("");
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
-  const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
+  const [photoPreview, setPhotoPreview] = useState<string | undefined>();
   const [cv, setCv] = useState<Student["cv"]>();
   const [cvError, setCvError] = useState("");
   const [cvLoading, setCvLoading] = useState(false);
@@ -24,11 +24,11 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
   const cvReaderRef = useRef<FileReader | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAvatar = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePhoto = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onloadend = () => setAvatarPreview(reader.result as string);
+    reader.onloadend = () => setPhotoPreview(reader.result as string);
     reader.readAsDataURL(file);
   };
 
@@ -79,7 +79,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
       github: github.trim(),
       linkedin: linkedin.trim(),
       bio: bio.trim(),
-      avatar: avatarPreview,
+      photo: photoPreview,
       cv,
     };
 
@@ -91,7 +91,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
     setSkillsRaw("");
     setGithub("");
     setLinkedin("");
-    setAvatarPreview(undefined);
+    setPhotoPreview(undefined);
     setCv(undefined);
     setCvError("");
     if (cvInputRef.current) cvInputRef.current.value = "";
@@ -116,13 +116,13 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
       <div className="flex flex-col items-center gap-2">
         <button
           type="button"
-          aria-label={avatarPreview ? "Change profile photo" : "Add profile photo"}
+          aria-label={photoPreview ? "Change profile photo" : "Add profile photo"}
           onClick={() => fileInputRef.current?.click()}
           className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-white/20 transition-all duration-200 hover:border-amber-400 hover:bg-amber-500/15 hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none"
         >
-          {avatarPreview ? (
+          {photoPreview ? (
             <img
-              src={avatarPreview}
+              src={photoPreview}
               alt="Preview"
               className="h-full w-full object-cover"
             />
@@ -134,11 +134,11 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          onChange={handleAvatar}
+          onChange={handlePhoto}
           className="hidden"
         />
         <span className="text-xs text-neutral-600">
-          {avatarPreview ? "Click to change" : "Add a photo"}
+          {photoPreview ? "Click to change" : "Add a photo"}
         </span>
       </div>
 
