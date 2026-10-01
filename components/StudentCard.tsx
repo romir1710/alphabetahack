@@ -9,6 +9,7 @@ export interface Student {
   github: string;
   linkedin: string;
   bio: string;
+  avatar?: string;
 }
 
 interface StudentCardProps {
@@ -24,14 +25,22 @@ export default function StudentCard({ student }: StudentCardProps) {
       <div className="relative z-10 flex flex-col gap-4">
         {/* Avatar + Name */}
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-500/80 to-yellow-600/80 text-lg font-bold text-black">
-            {student.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)
-              .toUpperCase()}
-          </div>
+          {student.avatar ? (
+            <img
+              src={student.avatar}
+              alt={student.name}
+              className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-amber-500/40"
+            />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-500/80 to-yellow-600/80 text-lg font-bold text-black">
+              {student.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase()}
+            </div>
+          )}
 
           <div className="min-w-0">
             <h3 className="truncate text-lg font-semibold tracking-tight text-white">

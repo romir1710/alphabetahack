@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { SendHorizonal } from "lucide-react";
+import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
+import { SendHorizonal, Camera } from "lucide-react";
 
 export interface Student {
   id: string;
@@ -10,6 +10,7 @@ export interface Student {
   github: string;
   linkedin: string;
   bio: string;
+  avatar?: string;
 }
 
 interface StudentFormProps {
@@ -22,6 +23,16 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
   const [skillsRaw, setSkillsRaw] = useState("");
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatar = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setAvatarPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,6 +49,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
       github: github.trim(),
       linkedin: linkedin.trim(),
       bio: bio.trim(),
+      avatar: avatarPreview,
     };
 
     onSubmit(student);
@@ -48,6 +60,8 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
     setSkillsRaw("");
     setGithub("");
     setLinkedin("");
+    setAvatarPreview(undefined);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const inputClasses =
@@ -63,6 +77,35 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
       <h2 className="text-lg font-semibold tracking-tight text-white">
         Join the Network
       </h2>
+
+      {/* Avatar Upload */}
+      <div className="flex flex-col items-center gap-2">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-white/20 transition-colors duration-200 hover:border-amber-500/50"
+        >
+          {avatarPreview ? (
+            <img
+              src={avatarPreview}
+              alt="Preview"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <Camera className="h-6 w-6 text-neutral-500 transition-colors duration-200 group-hover:text-amber-400" />
+          )}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleAvatar}
+          className="hidden"
+        />
+        <span className="text-xs text-neutral-600">
+          {avatarPreview ? "Click to change" : "Add a photo"}
+        </span>
+      </div>
 
       {/* Name */}
       <div>
