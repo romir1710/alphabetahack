@@ -99,16 +99,16 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
   };
 
   const inputClasses =
-    "w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-neutral-500 outline-none backdrop-blur-sm transition-colors duration-200 hover:border-amber-500/40 focus:border-amber-400 focus:ring-2 focus:ring-amber-500/40 motion-reduce:transition-none";
+    "w-full rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 outline-none transition-colors duration-200 hover:border-neutral-300 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200 motion-reduce:transition-none";
 
-  const labelClasses = "block text-xs font-medium uppercase tracking-wider text-neutral-400 mb-1.5";
+  const labelClasses = "block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-1.5";
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-md space-y-5 rounded-2xl border border-white/10 bg-black/60 p-6 backdrop-blur-xl"
+      className="w-full max-w-2xl space-y-5 rounded-2xl border border-neutral-200 bg-white shadow-sm p-6"
     >
-      <h2 className="text-lg font-semibold tracking-tight text-white">
+      <h2 className="text-base font-semibold tracking-tight text-neutral-900">
         Join the Network
       </h2>
 
@@ -118,7 +118,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
           type="button"
           aria-label={photoPreview ? "Change profile photo" : "Add profile photo"}
           onClick={() => fileInputRef.current?.click()}
-          className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-white/20 transition-all duration-200 hover:border-amber-400 hover:bg-amber-500/15 hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none"
+          className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-neutral-300 transition-all duration-200 hover:border-neutral-500 hover:bg-neutral-100 hover:scale-105 active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none"
         >
           {photoPreview ? (
             <img
@@ -127,7 +127,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <Camera className="h-6 w-6 text-neutral-500 transition-colors duration-200 group-hover:text-amber-400" />
+            <Camera className="h-6 w-6 text-neutral-400 transition-colors duration-200 group-hover:text-neutral-700" />
           )}
         </button>
         <input
@@ -137,7 +137,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
           onChange={handlePhoto}
           className="hidden"
         />
-        <span className="text-xs text-neutral-600">
+        <span className="text-xs text-neutral-400">
           {photoPreview ? "Click to change" : "Add a photo"}
         </span>
       </div>
@@ -236,14 +236,14 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
           onChange={handleCv}
           aria-describedby="cv-help cv-status"
           aria-invalid={Boolean(cvError)}
-          className={`${inputClasses} file:mr-3 file:rounded-md file:border-0 file:bg-amber-500/10 file:px-3 file:py-1 file:text-amber-300 cursor-pointer file:cursor-pointer file:transition-colors hover:file:bg-amber-500/25 active:file:bg-amber-500/40 file:motion-reduce:transition-none`}
+          className={`${inputClasses} file:mr-3 file:rounded-md file:border-0 file:bg-neutral-100 file:px-3 file:py-1 file:text-neutral-600 file:text-xs cursor-pointer file:cursor-pointer file:transition-colors hover:file:bg-neutral-200 active:file:bg-neutral-300 file:motion-reduce:transition-none`}
         />
         <p id="cv-help" className="mt-1.5 text-xs text-neutral-500">PDF or Word document, up to 5 MB.</p>
-        <p id="cv-status" aria-live="polite" className={`mt-1 text-xs ${cvError ? "text-red-400" : "text-neutral-400"}`}>
+        <p id="cv-status" aria-live="polite" className={`mt-1 text-xs ${cvError ? "text-red-500" : "text-neutral-400"}`}>
           {cvError || (cvLoading ? "Reading CV…" : cv ? `${cv.name} ready to upload` : "")}
         </p>
         {(cv || cvError) && (
-          <button type="button" className="mt-2 rounded-lg px-3 py-2 text-xs text-amber-400 transition-all duration-200 hover:bg-amber-500/15 hover:text-amber-200 active:scale-95 active:bg-amber-500/25 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none" onClick={() => {
+          <button type="button" className="mt-2 rounded-lg px-3 py-2 text-xs text-neutral-500 transition-all duration-200 hover:bg-neutral-100 hover:text-neutral-800 active:scale-95 active:bg-neutral-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none" onClick={() => {
             setCv(undefined);
             setCvError("");
             if (cvInputRef.current) cvInputRef.current.value = "";
@@ -257,7 +257,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
       <button
         type="submit"
         disabled={cvLoading || Boolean(cvError)}
-        className="group flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-yellow-600 px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 enabled:hover:brightness-110 enabled:hover:shadow-[0_0_20px_-3px_rgba(217,169,56,0.5)] enabled:active:scale-[0.98] enabled:active:brightness-90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 motion-reduce:transition-none motion-reduce:transform-none"
+        className="group flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 enabled:hover:bg-neutral-700 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:transform-none"
       >
         {cvLoading ? "Reading CV…" : "Submit"}
         <SendHorizonal className="h-4 w-4 transition-transform duration-200 group-enabled:group-hover:translate-x-0.5 motion-reduce:transform-none" />

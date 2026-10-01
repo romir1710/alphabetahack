@@ -92,11 +92,11 @@ export default function FounderSearch({
     .filter((m) => m.student);
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-8">
+    <div className="w-full max-w-2xl mx-auto space-y-4">
       {/* Search box */}
-      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 space-y-4">
-        <label className="block text-lg font-medium text-white">
-          What kind of co-founder are you looking for?
+      <div className="rounded-2xl border border-neutral-200 bg-white shadow-sm p-6 space-y-4">
+        <label className="block text-base font-semibold text-neutral-800 tracking-tight">
+          Find a partner
         </label>
         <div className="flex gap-3">
           <input
@@ -104,35 +104,35 @@ export default function FounderSearch({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && findMatches()}
             placeholder="e.g. A frontend developer who knows React"
-            className="flex-1 rounded-xl bg-black/50 border border-white/10 px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-amber-400/60 transition-colors"
+            className="flex-1 rounded-xl bg-neutral-50 border border-neutral-200 px-4 py-3 text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-400 focus:ring-2 focus:ring-neutral-200 transition-colors text-sm"
           />
           <button
             onClick={findMatches}
             disabled={loading || !query.trim()}
-            className="flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 font-semibold text-black transition hover:shadow-[0_0_20px_rgba(251,191,36,0.5)] disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-neutral-900 px-6 py-3 font-semibold text-white text-sm transition hover:bg-neutral-700 disabled:opacity-40"
           >
-            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
             Match
           </button>
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         {/* Demo mode button */}
         <button
           onClick={loadDemo}
-          className="flex items-center gap-2 text-[11px] tracking-widest uppercase text-white/30 hover:text-amber-400 transition-colors"
+          className="flex items-center gap-2 text-[10px] tracking-widest uppercase text-neutral-400 hover:text-neutral-700 transition-colors"
         >
-          <FlaskConical className="h-3.5 w-3.5" />
+          <FlaskConical className="h-3 w-3" />
           Preview matches (demo mode)
         </button>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center justify-center gap-3 text-amber-300">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span>Finding your best matches...</span>
+        <div className="flex items-center justify-center gap-3 text-neutral-500">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm">Finding your best matches...</span>
         </div>
       )}
 
