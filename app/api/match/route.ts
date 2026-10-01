@@ -7,6 +7,8 @@ export interface Student {
   github: string;
   linkedin: string;
   bio: string;
+  avatar?: string;
+  cv?: { name: string; dataUrl: string };
 }
 
 interface Match {
@@ -22,6 +24,8 @@ const MODELS = [
   "qwen/qwen3.8-27b:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
 ];
+
+const TIMEOUT_MS = 20000;
 
 function parseMatches(text: string): Match[] {
   // Small models often wrap JSON in ```json fences despite being told not to.
@@ -42,23 +46,35 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Query and students are required" }, { status: 400 });
   }
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      models: MODELS,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `Search query: ${query}\n\nStudents:\n${JSON.stringify(students)}`,
-        },
-      ],
-    }),
-  });
+  // CVs and avatars are whole files as text, too big to send; the AI only needs these fields.
+  const profiles = students.map(({ id, name, skills, bio }) => ({ id, name, skills, bio }));
+
+  let response: Response;
+  try {
+    response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        models: MODELS,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: `Search query: ${query}\n\nStudents:\n${JSON.stringify(profiles)}`,
+          },
+        ],
+      }),
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "TimeoutError") {
+      return NextResponse.json({ error: "AI took too long, please try again" }, { status: 504 });
+    }
+    throw err;
+  }
 
   if (!response.ok) {
     console.error("OpenRouter error:", await response.text());

@@ -11,6 +11,8 @@ export interface Student {
   github: string;
   linkedin: string;
   bio: string;
+  avatar?: string;
+  cv?: { name: string; dataUrl: string };
 }
 
 interface Match {
