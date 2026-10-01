@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Linkedin } from "lucide-react";
+import { Github, Linkedin, FileText } from "lucide-react";
 
 export interface Student {
   id: string;
@@ -10,6 +10,7 @@ export interface Student {
   linkedin: string;
   bio: string;
   avatar?: string;
+  cv?: { name: string; dataUrl: string };
 }
 
 interface StudentCardProps {
@@ -65,6 +66,18 @@ export default function StudentCard({ student }: StudentCardProps) {
             </span>
           ))}
         </div>
+
+        {student.cv && (
+          <a
+            href={student.cv.dataUrl}
+            download={student.cv.name}
+            aria-label={`Download ${student.name}'s CV`}
+            className="flex items-center gap-2 self-start rounded-lg border border-amber-500/20 px-3 py-2 text-sm text-amber-300 transition-colors hover:bg-amber-500/10"
+          >
+            <FileText className="h-4 w-4" />
+            Download CV
+          </a>
+        )}
 
         {/* Social Links */}
         <div className="flex items-center gap-3 pt-1">

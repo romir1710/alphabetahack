@@ -11,6 +11,7 @@ export interface Student {
   linkedin: string;
   bio: string;
   avatar?: string;
+  cv?: { name: string; dataUrl: string };
 }
 
 interface StudentFormProps {
@@ -24,6 +25,11 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [avatarPreview, setAvatarPreview] = useState<string | undefined>();
+  const [cv, setCv] = useState<Student["cv"]>();
+  const [cvError, setCvError] = useState("");
+  const [cvLoading, setCvLoading] = useState(false);
+  const cvInputRef = useRef<HTMLInputElement>(null);
+  const cvReaderRef = useRef<FileReader | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatar = (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,8 +40,40 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
     reader.readAsDataURL(file);
   };
 
+  const handleCv = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (cvReaderRef.current) {
+      cvReaderRef.current.onload = null;
+      cvReaderRef.current.onerror = null;
+      cvReaderRef.current.abort();
+    }
+    setCv(undefined);
+    setCvError("");
+    setCvLoading(false);
+    if (!/\.(pdf|doc|docx)$/i.test(file.name) || file.size === 0 || file.size > 5 * 1024 * 1024) {
+      setCvError("Choose a non-empty PDF or Word document up to 5 MB.");
+      e.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    cvReaderRef.current = reader;
+    setCvLoading(true);
+    reader.onload = () => {
+      setCv({ name: file.name, dataUrl: reader.result as string });
+      setCvLoading(false);
+    };
+    reader.onerror = () => {
+      setCvError("Unable to read this CV. Please select it again.");
+      setCvLoading(false);
+      if (cvInputRef.current) cvInputRef.current.value = "";
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (cvLoading || cvError) return;
 
     const skills = skillsRaw
       .split(",")
@@ -50,6 +88,7 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
       linkedin: linkedin.trim(),
       bio: bio.trim(),
       avatar: avatarPreview,
+      cv,
     };
 
     onSubmit(student);
@@ -61,6 +100,9 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
     setGithub("");
     setLinkedin("");
     setAvatarPreview(undefined);
+    setCv(undefined);
+    setCvError("");
+    if (cvInputRef.current) cvInputRef.current.value = "";
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -188,9 +230,40 @@ export default function StudentForm({ onSubmit }: StudentFormProps) {
         />
       </div>
 
+      {/* CV Upload */}
+      <div>
+        <label htmlFor="cv" className={labelClasses}>
+          CV <span className="normal-case tracking-normal text-neutral-600">(optional)</span>
+        </label>
+        <input
+          ref={cvInputRef}
+          id="cv"
+          type="file"
+          accept=".pdf,.doc,.docx"
+          onChange={handleCv}
+          aria-describedby="cv-help cv-status"
+          aria-invalid={Boolean(cvError)}
+          className={`${inputClasses} file:mr-3 file:rounded-md file:border-0 file:bg-amber-500/10 file:px-3 file:py-1 file:text-amber-300`}
+        />
+        <p id="cv-help" className="mt-1.5 text-xs text-neutral-500">PDF or Word document, up to 5 MB.</p>
+        <p id="cv-status" aria-live="polite" className={`mt-1 text-xs ${cvError ? "text-red-400" : "text-neutral-400"}`}>
+          {cvError || (cvLoading ? "Reading CV…" : cv ? `${cv.name} ready to upload` : "")}
+        </p>
+        {(cv || cvError) && (
+          <button type="button" className="mt-2 text-xs text-amber-400 hover:text-amber-300" onClick={() => {
+            setCv(undefined);
+            setCvError("");
+            if (cvInputRef.current) cvInputRef.current.value = "";
+          }}>
+            Remove CV
+          </button>
+        )}
+      </div>
+
       {/* Submit */}
       <button
         type="submit"
+        disabled={cvLoading || Boolean(cvError)}
         className="group flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-yellow-600 px-4 py-2.5 text-sm font-semibold text-black transition-all duration-200 hover:shadow-[0_0_20px_-3px_rgba(217,169,56,0.5)] active:scale-[0.98]"
       >
         Submit
