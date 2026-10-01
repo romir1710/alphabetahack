@@ -58,7 +58,7 @@ export const initialStudents: Student[] = [
   },
   {
     id: "student-7",
-    name: "Manitej Narayan Dasu",
+    name: "Manitej Narayanadasu",
     skills: ["Web Development", "UI/UX Design", "Figma", "React", "Next.js", "Tailwind CSS", "Node.js", "REST APIs", "PostgreSQL", "Vercel", "shadcn/ui"],
     github: "https://github.com/ManitejNarayanadasu",
     linkedin: "https://linkedin.com/in/manitejnarayanadasu",
