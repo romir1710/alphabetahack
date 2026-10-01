@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import FounderSearch from "@/components/FounderSearch";
-import { initialStudents } from "@/MockStudent";
+import { initialStudents } from "@/data/MockStudent";
 
 /* ─────────────────────────────────────────────
    Types
