@@ -7,15 +7,15 @@ export default function StudentCard({ student }: { student: Student }) {
         <div>
           <p className="text-lg font-semibold text-white">{student.name}</p>
           <p className="text-xs text-white/40 tracking-widest uppercase mt-1">
-            {student.skills.join("  ·  ")}
+            {student.skills.join("  \u00b7  ")}
           </p>
         </div>
         <div className="flex gap-3 text-[11px] tracking-widest uppercase text-white/40 shrink-0">
           <a href={student.github} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-            GitHub ↗
+            GitHub
           </a>
           <a href={student.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-            LinkedIn ↗
+            LinkedIn
           </a>
         </div>
       </div>
